@@ -3,6 +3,48 @@ A browser interface based on Gradio library for Stable Diffusion.
 
 ![](screenshot.png)
 
+
+
+## Troubleshooting
+1. connect failed in Docker contrainer
+```sh
+# apt update
+Err:1 http://archive.ubuntu.com/ubuntu focal InRelease
+  Temporary failure resolving 'archive.ubuntu.com'
+Err:2 http://security.ubuntu.com/ubuntu focal-security InRelease
+  Temporary failure resolving 'security.ubuntu.com'
+Err:3 http://archive.ubuntu.com/ubuntu focal-updates InRelease
+  Temporary failure resolving 'archive.ubuntu.com'
+Err:4 http://archive.ubuntu.com/ubuntu focal-backports InRelease
+  Temporary failure resolving 'archive.ubuntu.com'
+```
+> https://medium.com/@faithfulanere/solved-docker-build-could-not-resolve-archive-ubuntu-com-apt-get-fails-to-install-anything-9ea4dfdcdcf2
+
+```sh
+nmcli dev show | grep 'IP4.DNS'
+IP4.DNS[1]:                             10.2.0.7
+IP4.DNS[2]:                             10.2.0.8
+IP4.DNS[1]:                             8.8.8.8
+IP4.DNS[2]:                             168.95.1.1
+IP4.DNS[3]:                             168.95.192.1
+# -------------------------
+vi /etc/docker/daemon.json
+{
+  .......
+  ..........
+  "dns": ["10.2.0.7","10.2.0.8", "8.8.8.8","168.95.1.1","168.95.192.1"]
+}
+sudo service docker restart
+```
+```sh
+mkdir .cache
+docker run -d  --gpus all -v `pwd`:/workspace -w /workspace -v `pwd`/.cache:/.cache  -p 7860:7860 --name diffusionwebui ubuntu:20.04 tail -f /dev/null
+
+docker exec -it -u $(id -u):$(id -g) diffusionwebui bash
+./webui.sh --listen
+
+```
+
 ## Features
 [Detailed feature showcase with images](https://github.com/AUTOMATIC1111/stable-diffusion-webui/wiki/Features):
 - Original txt2img and img2img modes
