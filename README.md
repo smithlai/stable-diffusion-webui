@@ -38,9 +38,10 @@ sudo service docker restart
 ```
 ```sh
 mkdir .cache
-docker run -d  --gpus all -v `pwd`:/workspace -w /workspace -v `pwd`/.cache:/.cache  -p 7860:7860 --name diffusionwebui ubuntu:20.04 tail -f /dev/null
+docker run -d --gpus all -v `pwd`:/workspace -w /workspace -v `pwd`/.cache:/.cache -u $(id -u):$(id -g) -p 7860:7860 --name diffusionwebui ubuntu:20.04 /workspace/on_docker_start.sh
 
-docker exec -it -u $(id -u):$(id -g) diffusionwebui bash
+docker exec -it -u root:root diffusionwebui apt update
+docker exec -it -u root:root diffusionwebui apt install -y wget git python3 python3-venv
 ./webui.sh --listen
 
 ```
